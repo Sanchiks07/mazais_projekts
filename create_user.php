@@ -1,5 +1,6 @@
 <?php
 require "config.php";
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = $_POST["first_name"] ?? "";
@@ -13,7 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($first_name) && !empty($last_name) && !empty($phone) && !empty($email) && !empty($birthday) && !empty($password)) {
         try {
-            $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, phone, email, birthday, password) VALUES (:first_name, :last_name, :phone, :email, :birthday, :password)");
+            $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, phone, email, birthday, password) 
+                                   VALUES (:first_name, :last_name, :phone, :email, :birthday, :password)");
             $stmt->bindParam(":first_name", $first_name);
             $stmt->bindParam(":last_name", $last_name);
             $stmt->bindParam(":phone", $phone);
@@ -23,12 +25,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $stmt->execute();
 
-            echo json_encode(["success" => true, "message" => "User created successfully", "redirect" => "read_users.php"]);
+            $_SESSION["message"] = "User created successfully!";
+            $_SESSION["message_type"] = "success";
         } catch (PDOException $e) {
-            echo json_encode(["success" => false, "message" => "Error: " . $e->getMessage()]);
+            $_SESSION["message"] = "Error: " . $e->getMessage();
+            $_SESSION["message_type"] = "error";
         }
     } else {
-        echo json_encode(["success" => false, "message" => "All fields are required."]);
+        $_SESSION["message"] = "All fields are required.";
+        $_SESSION["message_type"] = "error";
     }
+
+    header("Location: index.php");
+    exit();
 }
 ?>
