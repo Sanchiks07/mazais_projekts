@@ -1,16 +1,13 @@
 <?php
-// Enable error reporting
 ini_set("display_errors", 1);
 ini_set("display_startup_errors", 1);
 error_reporting(E_ALL);
 
-require_once "config.php"; // Assuming config.php handles DB connection
+require_once "config.php";
 
-$successMessage = '';
-$errorMessage = '';
+$alertMessage = '';
 
-// Handle file upload
-if (isset($_FILES['file'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     $file = $_FILES['file'];
     $fileName = basename($file['name']);
     $fileTempName = $file['tmp_name'];
@@ -18,23 +15,31 @@ if (isset($_FILES['file'])) {
 
     $uploadDir = "uploads/";
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true); // Create directory if it doesn't exist
+        mkdir($uploadDir, 0777, true);
     }
 
-    // Check if there was no error with the file upload
     if ($fileError === 0) {
         $filePath = $uploadDir . $fileName;
         if (move_uploaded_file($fileTempName, $filePath)) {
-            $successMessage = "✅ File uploaded successfully!";
-            
-            // Save file path in the database (optional)
             $stmt = $pdo->prepare("INSERT INTO upload_paths (file_name, file_path) VALUES (?, ?)");
             $stmt->execute([$fileName, $filePath]);
+
+            // Store success message in session
+            session_start();
+            $_SESSION['alertMessage'] = "✅ File uploaded successfully!";
+            header("Location: upload.php");
+            exit();
         } else {
-            $errorMessage = "Failed to upload file!";
+            session_start();
+            $_SESSION['alertMessage'] = "❌ Failed to upload file!";
+            header("Location: upload.php");
+            exit();
         }
     } else {
-        $errorMessage = "There was an error uploading the file!";
+        session_start();
+        $_SESSION['alertMessage'] = "⚠️ There was an error uploading the file!";
+        header("Location: upload.php");
+        exit();
     }
 }
 ?>
@@ -52,13 +57,11 @@ if (isset($_FILES['file'])) {
         <a href="index.php">Sign Up</a>
         <a href="read_users.php">Lietotāji</a>
         <a href="upload.php">Faila Agšupielāde</a>
+        <a href="read_files.php">Augšupielādētie Faili</a>
     </nav>
 
     <div class="center">
         <h1>Faila Augšupielāde</h1>
-
-        <?php if ($successMessage) echo "<p class='success'>$successMessage</p>"; ?>
-        <?php if ($errorMessage) echo "<p class='error'>$errorMessage</p>"; ?>
 
         <!-- File Upload Form -->
         <form method="POST" enctype="multipart/form-data">
@@ -71,10 +74,14 @@ if (isset($_FILES['file'])) {
 
             <button type="submit">Upload</button>
         </form>
-
-        <a href="read_files.php">
-            <button>View Uploaded Files</button>
-        </a>
     </div>
+
+    <?php
+    session_start();
+    if (isset($_SESSION['alertMessage'])) {
+        echo "<script>alert('" . $_SESSION['alertMessage'] . "');</script>";
+        unset($_SESSION['alertMessage']);
+    }
+    ?>
 </body>
 </html>

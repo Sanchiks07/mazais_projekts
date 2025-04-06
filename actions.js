@@ -13,28 +13,28 @@ function editUser(button) {
     popup.innerHTML = `
         <div class="popup-content">
             <h2>Rediģēt Lietotāju</h2>
-            <form method="POST">
+            <form method="POST" id="editForm">
                 <input id="editId" value="${id}" hidden />
                 <div class="input-group">
                     <label>
                         Vārds
                         <input id="editFirstName" value="${firstName}" required />
-                    </label><br><br>
+                    </label><br>
 
                     <label>
                         Uzvārds
                         <input id="editLastName" value="${lastName}" required />
-                    </label><br><br>
+                    </label><br>
 
                     <label>
                         Telefona Nr.
                         <input id="editPhone" value="${phone}" required />
-                    </label><br><br>
+                    </label><br>
 
                     <label>
                         E-pasts
                         <input type="email" id="editEmail" value="${email}" required />
-                    </label><br><br>
+                    </label><br>
 
                     <label>
                         Dzimšanas Diena
@@ -42,8 +42,8 @@ function editUser(button) {
                     </label><br><br>
                 </div>
                 <div class="popup-buttons">
-                    <button type="button" id="saveChanges">Saglabāt</button>
-                    <button type="button" id="cancelEdit">Atcelt</button>
+                    <button type="button" id="saveChanges" class="save">Saglabāt</button>
+                    <button type="button" id="cancelEdit" class="cancel">Atcelt</button>
                 </div>
             </form>
         </div>
@@ -55,6 +55,10 @@ function editUser(button) {
     });
 
     document.getElementById("saveChanges").addEventListener("click", function () {
+        if (!validateForm()) {
+            return;
+        }
+
         let updatedData = {
             id: document.getElementById("editId").value,
             first_name: document.getElementById("editFirstName").value,
@@ -81,16 +85,45 @@ function editUser(button) {
                 row.cells[4].textContent = updatedData.email;
                 row.cells[5].textContent = updatedData.birthday;
                 document.body.removeChild(popup);
-                alert("Lietotājs veiksmīgi atjaunots!");
+                alert("User updated successfully!");
             } else {
-                alert("Kļūda atjaunojot lietotāju.");
+                alert("Error updating user.");
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert("Kļūda atjaunojot lietotāju.");
+            alert("Error updating user.");
         });
     });
+}
+
+// validator for edit
+function validateForm() {
+    let fname = document.getElementById("editFirstName").value;
+    let lname = document.getElementById("editLastName").value;
+    let phone = document.getElementById("editPhone").value;
+    let email = document.getElementById("editEmail").value;
+
+    let namePattern = /^[A-Za-zĀ-ž\s]+$/;
+    let phonePattern = /^\+?\d{4,20}$/;
+    let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!namePattern.test(fname) || !namePattern.test(lname)) {
+        alert("First name and Last name should contain only letters!");
+        return false;
+    }
+
+    if (!phonePattern.test(phone)) {
+        alert("Phone number should contain only digits and may start with '+'.\nPhone number should be from 4 to 20 digits long.");
+        return false;
+    }
+
+    if (!emailPattern.test(email)) {
+        alert("Invalid email address!");
+        return false;
+    }
+
+    return true;
 }
 
 // delete
@@ -98,7 +131,7 @@ function deleteUser(button) {
     let row = button.closest("tr");
     let userId = row.dataset.id;
 
-    if (confirm("Vai tiešām vēlaties dzēst šo lietotāju?")) {
+    if (confirm("Are you sure you want to delete this user?")) {
         fetch('delete_user.php', {
             method: 'POST',
             headers: {
@@ -110,14 +143,14 @@ function deleteUser(button) {
         .then(data => {
             if (data.success) {
                 row.remove();
-                alert("Lietotājs veiksmīgi dzēsts!");
+                alert("User deleted successfully!");
             } else {
-                alert("Kļūda dzēšot lietotāju.");
+                alert("Error deleting user.");
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert("Kļūda dzēšot lietotāju.");
+            alert("Error deleting user.");
         });
     }
 }

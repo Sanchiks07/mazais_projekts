@@ -6,7 +6,7 @@ function validateForm() {
     let password = document.forms["signup"]["password"].value;
 
     let namePattern = /^[A-Za-zĀ-ž\s]+$/;
-    let phonePattern = /^\+?\d{7,15}$/;
+    let phonePattern = /^\+?\d{4,20}$/;
     let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*-_.]).{9,}$/;
 
@@ -16,7 +16,7 @@ function validateForm() {
     }
 
     if (!phonePattern.test(phone)) {
-        alert("Invalid phone number! It should contain only digits and may start with '+'.");
+        alert("Phone number should contain only digits and may start with '+'.\nPhone number should be from 4 to 20 digits long.");
         return false;
     }
 

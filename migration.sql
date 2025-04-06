@@ -10,4 +10,11 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL,
     birthday DATE NOT NULL,
     password VARCHAR(255) NOT NULL
-)
+);
+
+CREATE TABLE upload_paths ( 
+    id INT(11) AUTO_INCREMENT PRIMARY KEY, 
+    file_name VARCHAR(255) NOT NULL, 
+    file_path VARCHAR(255) NOT NULL, 
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);

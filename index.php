@@ -15,6 +15,7 @@
         <a href="index.php">Sign Up</a>
         <a href="read_users.php">Lietotāji</a>
         <a href="upload.php">Faila Agšupielāde</a>
+        <a href="read_files.php">Augšupielādētie Faili</a>
     </nav>
 
     <?php if (isset($_SESSION["message"])): ?>
@@ -26,7 +27,7 @@
 
     <div class="center">
         <h1>Sign Up</h1>
-        <form method="POST" action="create_user.php" id="signup">
+        <form method="POST" action="create_user.php" id="signup" onsubmit="return validateForm()">
             <div class="input-group">
                 <label>Vārds
                     <input name="first_name" id="first_name" required>
@@ -54,7 +55,7 @@
                 
                 <label>
                     Parole
-                    <input name="password" type="password" id="passowrd" required>
+                    <input name="password" type="password" id="password" required>
                 </label><br><br>
             </div>
             

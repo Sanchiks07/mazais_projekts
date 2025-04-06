@@ -24,6 +24,7 @@ try {
         <a href="index.php">Sign Up</a>
         <a href="read_users.php">Lietotāji</a>
         <a href="upload.php">Faila Agšupielāde</a>
+        <a href="read_files.php">Augšupielādētie Faili</a>
     </nav>
 
     <div class="center">
@@ -56,7 +57,7 @@ try {
                         </tr>";
                 }
             } else {
-                echo "<tr><td colspan='6'>Nav datu</td></tr>";
+                echo "<tr><td colspan='7'>Nav datu</td></tr>";
             }
             ?>
         </table>
