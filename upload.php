@@ -12,19 +12,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     $fileName = basename($file['name']);
     $fileTempName = $file['tmp_name'];
     $fileError = $file['error'];
+    $fileSize = $file['size'];
+
+    // atļautie faila extensions
+    $allowedFileTypes = [
+        'image/jpeg', 'image/png', 'image/gif',
+        'application/msword', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint',
+        'application/pdf',
+        'audio/mp3',
+        'video/mp4',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // doxc
+    ];
+
+    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+    // atļautie MIME tipi priekš validation
+    $allowedMimeTypes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
+        'application/msword' => 'doc',
+        'application/vnd.ms-excel' => 'xls',
+        'application/vnd.ms-powerpoint' => 'ppt',
+        'application/pdf' => 'pdf',
+        'audio/mp3' => 'mp3',
+        'video/mp4' => 'mp4',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx' // docx
+    ];
 
     $uploadDir = "uploads/";
+
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
 
     if ($fileError === 0) {
+        // pārbauda fila extension
+        $fileMimeType = mime_content_type($fileTempName);
+        if (!in_array($fileMimeType, $allowedFileTypes)) {
+            session_start();
+            $_SESSION['alertMessage'] = "❌ Invalid file type! Only image files, Microsoft documents, PDFs, MP3, and MP4 files are allowed.";
+            header("Location: upload.php");
+            exit();
+        }
+
         $filePath = $uploadDir . $fileName;
         if (move_uploaded_file($fileTempName, $filePath)) {
             $stmt = $pdo->prepare("INSERT INTO upload_paths (file_name, file_path) VALUES (?, ?)");
             $stmt->execute([$fileName, $filePath]);
 
-            // Store success message in session
             session_start();
             $_SESSION['alertMessage'] = "✅ File uploaded successfully!";
             header("Location: upload.php");

@@ -19,10 +19,18 @@
     </nav>
 
     <?php if (isset($_SESSION["message"])): ?>
-        <script>
-            alert("<?php echo $_SESSION['message']; ?>");
-        </script>
-        <?php unset($_SESSION["message"]); ?>
+        <div class="message <?= $_SESSION["message_type"] ?? 'info' ?>">
+            <?php if (is_array($_SESSION["message"])): ?>
+                <ul>
+                    <?php foreach ($_SESSION["message"] as $msg): ?>
+                        <li><?= htmlspecialchars($msg) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <?= htmlspecialchars($_SESSION["message"]) ?>
+            <?php endif; ?>
+            <?php unset($_SESSION["message"], $_SESSION["message_type"]); ?>
+        </div>
     <?php endif; ?>
 
     <div class="center">
@@ -50,7 +58,7 @@
                 
                 <label>
                     Dzimšanas Diena
-                    <input name="birthday" type="date" id="date" required>
+                    <input name="birthday" type="date" id="birthday" required>
                 </label><br><br>
                 
                 <label>
@@ -63,6 +71,6 @@
         </form>
     </div>
 
-    <script src="validator.js"></script>
+    <script src="validation.js"></script>
 </body>
 </html>

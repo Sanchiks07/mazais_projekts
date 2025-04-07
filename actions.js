@@ -1,4 +1,4 @@
-// edit
+// edit user
 function editUser(button) {
     let row = button.closest("tr");
     let id = row.cells[0].textContent;
@@ -97,15 +97,16 @@ function editUser(button) {
     });
 }
 
-// validator for edit
+// validator for edit user
 function validateForm() {
     let fname = document.getElementById("editFirstName").value;
     let lname = document.getElementById("editLastName").value;
     let phone = document.getElementById("editPhone").value;
     let email = document.getElementById("editEmail").value;
+    let birthday = document.getElementById("editBirthday").value;
 
     let namePattern = /^[A-Za-zĀ-ž\s]+$/;
-    let phonePattern = /^\+?\d{4,20}$/;
+    let phonePattern = /^\+?\d{8}$/;
     let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!namePattern.test(fname) || !namePattern.test(lname)) {
@@ -114,7 +115,7 @@ function validateForm() {
     }
 
     if (!phonePattern.test(phone)) {
-        alert("Phone number should contain only digits and may start with '+'.\nPhone number should be from 4 to 20 digits long.");
+        alert("Phone number should contain only digits and may start with '+'.\nPhone number should be 8 digits long.");
         return false;
     }
 
@@ -123,10 +124,17 @@ function validateForm() {
         return false;
     }
 
+    let today = new Date();
+    let inputBirthday = new Date(birthday);
+    if (inputBirthday > today) {
+        alert("Birthday cannot be in the future!");
+        return false;
+    }
+
     return true;
 }
 
-// delete
+// delete user
 function deleteUser(button) {
     let row = button.closest("tr");
     let userId = row.dataset.id;
